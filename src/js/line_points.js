@@ -8,15 +8,18 @@ MG.add_hook('global.defaults', function(args) {
   args.line_point_size = args.line_point_size || args.point_size;
 });
 
-function addNodesToLines(data, args) {
+function addNodesToLines(data, existingLine, args) {
   var svg = d3.select(args.target)
               .select('svg');
 
-  var container = svg.selectAll('g.mg-line' + data.line_id + '-points')
-                    .data([0]).enter()
-                    .append('g')
-                      .classed('mg-line-points', true)
-                      .classed('mg-line' + data.line_id + '-points', true);
+  var container = svg.select('g.mg-line' + data.line_id + '-points');
+  if (container.empty()) {
+    container = svg.append('g')
+                  .classed('mg-line-points', true)
+                  .classed('mg-line' + data.line_id + '-points', true);
+  }
+
+  container.moveToFront();
 
   var pointsJoin = container.selectAll('circle.mg-line-point')
                     .data(data);
@@ -25,29 +28,62 @@ function addNodesToLines(data, args) {
 
   var updateTransitionDuration = (args.transition_on_update) ? 1000 : 0;
 
-  pointsJoin.exit().remove();
+  // pointsJoin.data(data).exit().remove();
 
   var points = pointsJoin.enter()
-    .append('circle')
-      .classed('mg-line-point', true)
-      .classed('mg-line' + data.line_id + '-color', true)
-      .classed('mg-area' + data.line_id + '-color', true)
-      .attr('r', args.line_point_size);
+                .append('circle')
+                  .classed('mg-line-point', true)
+                  .classed('mg-line' + data.line_id + '-color', true)
+                  .classed('mg-area' + data.line_id + '-color', true)
+                  .attr({
+                    cx: args.scalefns.xf,
+                    r: args.line_point_size,
+                    opacity: 0
+                  });
 
-  points.attr({
-    cx: args.scalefns.xf,
-    cy: function() {
-      return args.scales.Y(yMedian); },
-    r: args.line_point_size,
-    opacity: 0
-  });
+  // initial load
+  if (existingLine.empty()) {
+    if (args.animate_on_load) {
+      points
+        .attr({
+          cy: function() { return args.scales.Y(yMedian); }
+        })
+        .transition().duration(1000)
+          .attr({
+            cy: args.scalefns.yf,
+            opacity: 1
+          });
 
-  points
-    .transition().duration(updateTransitionDuration)
-    .attr({
-      cy: args.scalefns.yf,
-      opacity: 1
-    });
+    } else {
+      points.attr({
+        cy: args.scalefns.yf,
+        opacity: 1
+      });
+    }
+  }
+
+  // subsequent updates
+  else {
+    pointsJoin
+      .transition().duration(updateTransitionDuration)
+      .attr({
+        cy: args.scalefns.yf,
+        cx: args.scalefns.xf,
+        opacity: 1
+      });
+
+    pointsJoin.exit()
+      .transition().duration(updateTransitionDuration / 2)
+      .attr('opacity', 0)
+      .remove();
+  }
 }
 
 MG.add_hook('line.after_each_series', addNodesToLines);
+
+// helpers
+d3.selection.prototype.moveToFront = function() {
+  return this.each(function(){
+    this.parentNode.appendChild(this);
+  });
+};
