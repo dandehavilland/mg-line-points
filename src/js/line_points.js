@@ -80,10 +80,3 @@ function addNodesToLines(data, existingLine, args) {
 }
 
 MG.add_hook('line.after_each_series', addNodesToLines);
-
-// helpers
-d3.selection.prototype.moveToFront = function() {
-  return this.each(function(){
-    this.parentNode.appendChild(this);
-  });
-};

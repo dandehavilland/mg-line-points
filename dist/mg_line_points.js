@@ -7,6 +7,16 @@
     root.Mg_line_points = factory(root.d3, root.jQuery, root.MG);
   }
 }(this, function(d3, $, MG) {
+// helpers
+
+if (typeof d3.selection.prototype.moveToFront === 'undefined') {
+  d3.selection.prototype.moveToFront = function() {
+    return this.each(function(){
+      this.parentNode.appendChild(this);
+    });
+  };
+}
+
 /**
   Add a node to the line at each data point.
 */
@@ -89,13 +99,6 @@ function addNodesToLines(data, existingLine, args) {
 }
 
 MG.add_hook('line.after_each_series', addNodesToLines);
-
-// helpers
-d3.selection.prototype.moveToFront = function() {
-  return this.each(function(){
-    this.parentNode.appendChild(this);
-  });
-};
 
 return ;
 }));
