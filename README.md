@@ -1,35 +1,29 @@
-# mg-sample-extension
-An example of how to extend the [metrics-graphics](http://github.com/mozilla/metrics-graphics) data visualisation library.
+# mg-line-points
+Add a node to a line for each point in the series.
 
 **Note:** the addon system is still under heavy development. This project will currently only work with [my pending PR](https://github.com/mozilla/metrics-graphics/pull/351) for metrics-graphics.
 
-### Requirements
+### Usage
 
-If you're thinking of extending metrics-graphics then you should already have everything you need:
+Install using bower (not yet published):
 
-- [Node.JS](http://nodejs.org/)
-- [bower](http://bower.io)
+- `bower install dandehavilland/mg-line-points --save`
 
+Include `dist/mg_line_points.js` in your build, or include it in your HTML:
 
-### Getting started
-
-- `git clone git@github.com:dandehavilland/mg-sample-extension.git ./my-extension-name`
-- `bower install && npm install`
-- `npm install -g gulp`
-- `gulp serve`
-
-The sandbox is then available at:
-
-- http://localhost:4300
-
-Make your changes, update this `README.md`, `package.json` and `bower.json` to reflect your extension details, then deploy as you see fit.
-
+- `<script src="bower_components/mg-line-points/dist/mg_line-points.js"></script>`
 
 ### Testing
 
 - `gulp test` to run the Test'em server in continuous mode.
 - `npm test` or `gulp test-ci` for a single run, CI mode.
 
+
+### Requirements
+
+- [Node.JS](http://nodejs.org/)
+- [bower](http://bower.io) or [io.js](https://iojs.org/)
+- [metrics-graphics](http://metricsgraphicsjs.org/)
 
 ### Contributing
 
