@@ -13,6 +13,15 @@ Include `dist/mg_line_points.js` in your build, or include it in your HTML:
 
 - `<script src="bower_components/mg-line-points/dist/mg_line-points.js"></script>`
 
+### Options
+
+| Option | Default | Notes |
+|--------|---------|-------|
+| `line_points` | `true` | Enable this addon. |
+| `line_point_size` | args.point_size | Point radius. |
+| `line_point_size_for_zero` | 0 | Point radius for zero values. |
+
+
 ### Testing
 
 - `gulp test` to run the Test'em server in continuous mode.

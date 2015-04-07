@@ -1,11 +1,21 @@
 /**
   Add a node to the line at each data point.
+
+  Options:
+
+    `line_points`:              (true) | false              # Enable this plugin?
+    `line_point_size`:          (args.point_size) | number  # Point radius
+    `line_point_size_for_zero`: (0) | number                # Point radius for zero values
+
 */
 
 MG.add_hook('global.defaults', function(args) {
   // enable mg-line-points unless it's explicitly disabled
-  args.line_points = args.line_points !== false;
-  args.line_point_size = args.line_point_size || args.point_size;
+  args.line_points              = args.line_points !== false;
+
+  args.line_point_size          = args.line_point_size || args.point_size;
+
+  args.line_point_size_for_zero = 0;
 });
 
 function addNodesToLines(data, existingLine, args) {
@@ -28,8 +38,6 @@ function addNodesToLines(data, existingLine, args) {
 
   var updateTransitionDuration = (args.transition_on_update) ? 1000 : 0;
 
-  // pointsJoin.data(data).exit().remove();
-
   var points = pointsJoin.enter()
                 .append('circle')
                   .classed('mg-line-point', true)
@@ -37,7 +45,7 @@ function addNodesToLines(data, existingLine, args) {
                   .classed('mg-area' + data.line_id + '-color', true)
                   .attr({
                     cx: args.scalefns.xf,
-                    r: args.line_point_size,
+                    r: calculatePointRadius,
                     opacity: 0
                   });
 
@@ -69,13 +77,23 @@ function addNodesToLines(data, existingLine, args) {
       .attr({
         cy: args.scalefns.yf,
         cx: args.scalefns.xf,
-        opacity: 1
+        opacity: 1,
+        r: calculatePointRadius
       });
 
     pointsJoin.exit()
       .transition().duration(updateTransitionDuration / 2)
       .attr('opacity', 0)
       .remove();
+  }
+
+
+  function calculatePointRadius(d) {
+    if (d[args.y_accessor] === 0) {
+      return args.line_point_size_for_zero;
+    } else {
+      return args.line_point_size;
+    }
   }
 }
 
